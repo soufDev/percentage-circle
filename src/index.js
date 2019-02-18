@@ -80,7 +80,7 @@ function PercentageCircle(props) {
         {props.children ? (
           props.children
         ) : (
-          <span className={"text " + props.textStyle}>{props.percent}%</span>
+          <h1 className={"text " + props.textStyle}>{props.percent}%</h1>
         )}
       </div>
     </div>
@@ -102,8 +102,8 @@ const rootElement = document.getElementById("root");
 ReactDOM.render(
   <PercentageCircle
     radius={60}
-    borderWidth={4}
-    percent={30}
+    borderWidth={10}
+    percent={80}
     color={"#2ecc71"}
   />,
   rootElement
