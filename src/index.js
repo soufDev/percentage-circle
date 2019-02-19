@@ -101,10 +101,10 @@ PercentageCircle.defaultProps = {
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <PercentageCircle
-    radius={60}
-    borderWidth={10}
-    percent={80}
-    color={"#2ecc71"}
+    radius={200}
+    borderWidth={5}
+    percent={36}
+    color={"#2ecc52"}
   />,
   rootElement
 );
