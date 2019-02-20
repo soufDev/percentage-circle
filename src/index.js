@@ -62,7 +62,7 @@ function usePercent(initValue) {
         setIsRunning(false);
       }
     },
-    isRunning ? 5 : null
+    isRunning ? 3 : null
   );
 
   return { ...state };
@@ -134,7 +134,7 @@ const PercentageCircle = React.memo(props => {
         <SecondLoader style={secondLoaderStyle} />
       </LeftWrap>
       <InnerCirle style={innerCirleStyle}>
-        <Text>{progress}%</Text>
+        <Text>{progress - 1}%</Text>
       </InnerCirle>
     </Circle>
   );
@@ -155,7 +155,7 @@ ReactDOM.render(
   <PercentageCircle
     radius={100}
     borderWidth={5}
-    percent={50}
+    percent={70}
     color={"#2ecc52"}
   />,
   rootElement
