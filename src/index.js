@@ -1,21 +1,69 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import styled from "styled-components";
 
 import "./styles.css";
 
-function PercentageCircle(props) {
-  const percent = props.percent;
+const Circle = styled.div`
+  overflow: hidden;
+  position: relative;
+  backgroundcolor: #e3e3e3;
+`;
+
+const LeftWrap = styled.div`
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+`;
+
+const Loader = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 1000;
+  transform-origin: 0 50%;
+`;
+
+const SecondLoader = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 1000;
+  transform-origin: 100% 50%;
+`;
+
+const InnerCirle = styled.div`
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Text = styled.h1`
+  font-size: 11;
+  color: #888;
+`;
+
+function usePercent(initValue) {
   let leftTransformerDegree = "0deg";
   let rightTransformerDegree = "0deg";
 
-  if (percent >= 50) {
+  if (initValue >= 50) {
     rightTransformerDegree = "180deg";
-    leftTransformerDegree = (percent - 50) * 3.6 + "deg";
+    leftTransformerDegree = (initValue - 50) * 3.6 + "deg";
   } else {
-    rightTransformerDegree = percent * 3.6 + "deg";
+    rightTransformerDegree = initValue * 3.6 + "deg";
     leftTransformerDegree = "0deg";
   }
 
+  return { leftTransformerDegree, rightTransformerDegree };
+}
+
+function PercentageCircle(props) {
+  const percent = props.percent;
+  const { leftTransformerDegree, rightTransformerDegree } = usePercent(percent);
   const circleStyle = {
     width: props.radius * 2,
     height: props.radius * 2,
@@ -39,51 +87,44 @@ function PercentageCircle(props) {
     transform: "rotate(" + leftTransformerDegree + ")"
   };
 
+  const secondLoaderStyle = {
+    left: -props.radius,
+    width: props.radius,
+    height: props.radius * 2,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    backgroundColor: props.color,
+    transform: "rotate(" + rightTransformerDegree + ")"
+  };
+
+  const innerCirleStyle = {
+    left: props.borderWidth,
+    top: props.borderWidth,
+    width: (props.radius - props.borderWidth) * 2,
+    height: (props.radius - props.borderWidth) * 2,
+    borderRadius: props.radius - props.borderWidth,
+    backgroundColor: props.innerColor
+  };
+
+  const rightWrapStyle = {
+    width: props.radius,
+    height: props.radius * 2,
+    left: props.radius
+  };
+
   return (
-    <div className="circle" style={circleStyle}>
-      <div className="left-wrap" style={leftWrapStyle}>
-        <div className="loader" id="id1" style={laoderStyle} />
-      </div>
-      <div
-        className="right-wrap"
-        style={{
-          width: props.radius,
-          height: props.radius * 2,
-          left: props.radius
-        }}
-      >
-        <div
-          className="loader2"
-          id="id2"
-          style={{
-            left: -props.radius,
-            width: props.radius,
-            height: props.radius * 2,
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0,
-            backgroundColor: props.color,
-            transform: "rotate(" + rightTransformerDegree + ")"
-          }}
-        />
-      </div>
-      <div
-        className="inner-circle"
-        style={{
-          left: props.borderWidth,
-          top: props.borderWidth,
-          width: (props.radius - props.borderWidth) * 2,
-          height: (props.radius - props.borderWidth) * 2,
-          borderRadius: props.radius - props.borderWidth,
-          backgroundColor: props.innerColor
-        }}
-      >
-        {props.children ? (
-          props.children
-        ) : (
-          <h1 className={"text " + props.textStyle}>{props.percent}%</h1>
-        )}
-      </div>
-    </div>
+    <Circle style={circleStyle}>
+      <Circle />
+      <LeftWrap style={leftWrapStyle}>
+        <Loader style={laoderStyle} />
+      </LeftWrap>
+      <LeftWrap style={rightWrapStyle}>
+        <SecondLoader style={secondLoaderStyle} />
+      </LeftWrap>
+      <InnerCirle style={innerCirleStyle}>
+        <Text>{props.percent}%</Text>
+      </InnerCirle>
+    </Circle>
   );
 }
 
@@ -94,15 +135,14 @@ PercentageCircle.defaultProps = {
   borderWidth: 2,
   bgcolor: "#e3e3e3",
   innerColor: "#fff",
-  disabled: false,
-  textStyle: ""
+  disabled: false
 };
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <PercentageCircle
     radius={200}
-    borderWidth={5}
+    borderWidth={10}
     percent={36}
     color={"#2ecc52"}
   />,
