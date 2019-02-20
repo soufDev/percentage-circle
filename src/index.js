@@ -2,7 +2,14 @@ import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
 
 import "./styles.css";
-import { Circle, LeftWrap, Loader, SecondLoader, InnerCirle, Text } from "./styledComponents";
+import {
+  Circle,
+  LeftWrap,
+  Loader,
+  SecondLoader,
+  InnerCirle,
+  Text
+} from "./styledComponents";
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -11,22 +18,33 @@ function useInterval(callback, delay) {
     savedCallback.current = callback;
   });
 
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
+  useEffect(
+    () => {
+      function tick() {
+        savedCallback.current();
+      }
 
-    let id = setInterval(tick, delay);
-    return () => clearInterval(id);
-  }, [delay]);
+      if (delay !== null) {
+        let id = setInterval(tick, delay);
+        return () => clearInterval(id);
+      }
+    },
+    [delay]
+  );
 }
 
 function usePercent(initValue) {
-  const [state, setState] = useState({ progress: 1, leftTransformerDegree: 'Odeg', rightTransformerDegree: '0deg'});
+  const [state, setState] = useState({
+    progress: 0,
+    leftTransformerDegree: "Odeg",
+    rightTransformerDegree: "0deg"
+  });
+  const [isRunning, setIsRunning] = useState(true);
 
-  useInterval(() => {
-    const { progress } = state
-      if (progress !== initValue) {
+  useInterval(
+    () => {
+      const { progress } = state;
+      if (progress < initValue) {
         if (progress >= 50) {
           setState(({ progress }) => ({
             progress: progress + 1,
@@ -35,20 +53,29 @@ function usePercent(initValue) {
           }));
         } else {
           setState(({ progress }) => ({
-              progress: progress + 1,
-              rightTransformerDegree: progress * 3.6 + "deg",
-              leftTransformerDegree: "0deg"
+            progress: progress + 1,
+            rightTransformerDegree: progress * 3.6 + "deg",
+            leftTransformerDegree: "0deg"
           }));
         }
+      } else {
+        setIsRunning(false);
       }
-  }, 20)
+    },
+    isRunning ? 5 : null
+  );
 
   return { ...state };
 }
 
-const PercentageCircle = React.memo((props) => {
+const PercentageCircle = React.memo(props => {
   const percent = props.percent;
-  const { leftTransformerDegree, rightTransformerDegree, progress } = usePercent(percent);
+  const {
+    leftTransformerDegree,
+    rightTransformerDegree,
+    progress
+  } = usePercent(percent);
+  console.log(progress);
   const circleStyle = {
     width: props.radius * 2,
     height: props.radius * 2,
@@ -111,7 +138,7 @@ const PercentageCircle = React.memo((props) => {
       </InnerCirle>
     </Circle>
   );
-})
+});
 
 PercentageCircle.defaultProps = {
   color: "#000",
@@ -128,7 +155,7 @@ ReactDOM.render(
   <PercentageCircle
     radius={100}
     borderWidth={5}
-    percent={98}
+    percent={50}
     color={"#2ecc52"}
   />,
   rootElement
