@@ -1,69 +1,54 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
-import styled from "styled-components";
 
 import "./styles.css";
+import { Circle, LeftWrap, Loader, SecondLoader, InnerCirle, Text } from "./styledComponents";
 
-const Circle = styled.div`
-  overflow: hidden;
-  position: relative;
-  backgroundcolor: #e3e3e3;
-`;
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
 
-const LeftWrap = styled.div`
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-`;
+  useEffect(() => {
+    savedCallback.current = callback;
+  });
 
-const Loader = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  border-radius: 1000;
-  transform-origin: 0 50%;
-`;
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
 
-const SecondLoader = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  border-radius: 1000;
-  transform-origin: 100% 50%;
-`;
-
-const InnerCirle = styled.div`
-  position: relative;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Text = styled.h1`
-  font-size: 11;
-  color: #888;
-`;
-
-function usePercent(initValue) {
-  let leftTransformerDegree = "0deg";
-  let rightTransformerDegree = "0deg";
-
-  if (initValue >= 50) {
-    rightTransformerDegree = "180deg";
-    leftTransformerDegree = (initValue - 50) * 3.6 + "deg";
-  } else {
-    rightTransformerDegree = initValue * 3.6 + "deg";
-    leftTransformerDegree = "0deg";
-  }
-
-  return { leftTransformerDegree, rightTransformerDegree };
+    let id = setInterval(tick, delay);
+    return () => clearInterval(id);
+  }, [delay]);
 }
 
-function PercentageCircle(props) {
+function usePercent(initValue) {
+  const [state, setState] = useState({ progress: 1, leftTransformerDegree: 'Odeg', rightTransformerDegree: '0deg'});
+
+  useInterval(() => {
+    const { progress } = state
+      if (progress !== initValue) {
+        if (progress >= 50) {
+          setState(({ progress }) => ({
+            progress: progress + 1,
+            rightTransformerDegree: "180deg",
+            leftTransformerDegree: (progress - 50) * 3.6 + "deg"
+          }));
+        } else {
+          setState(({ progress }) => ({
+              progress: progress + 1,
+              rightTransformerDegree: progress * 3.6 + "deg",
+              leftTransformerDegree: "0deg"
+          }));
+        }
+      }
+  }, 20)
+
+  return { ...state };
+}
+
+const PercentageCircle = React.memo((props) => {
   const percent = props.percent;
-  const { leftTransformerDegree, rightTransformerDegree } = usePercent(percent);
+  const { leftTransformerDegree, rightTransformerDegree, progress } = usePercent(percent);
   const circleStyle = {
     width: props.radius * 2,
     height: props.radius * 2,
@@ -122,11 +107,11 @@ function PercentageCircle(props) {
         <SecondLoader style={secondLoaderStyle} />
       </LeftWrap>
       <InnerCirle style={innerCirleStyle}>
-        <Text>{props.percent}%</Text>
+        <Text>{progress}%</Text>
       </InnerCirle>
     </Circle>
   );
-}
+})
 
 PercentageCircle.defaultProps = {
   color: "#000",
@@ -141,9 +126,9 @@ PercentageCircle.defaultProps = {
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <PercentageCircle
-    radius={200}
-    borderWidth={10}
-    percent={36}
+    radius={100}
+    borderWidth={5}
+    percent={98}
     color={"#2ecc52"}
   />,
   rootElement
