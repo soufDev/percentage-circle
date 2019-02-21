@@ -124,6 +124,10 @@ const PercentageCircle = React.memo(props => {
     left: props.radius
   };
 
+  const textColor = {
+    color: props.color
+  };
+
   return (
     <Circle style={circleStyle}>
       <Circle />
@@ -134,7 +138,7 @@ const PercentageCircle = React.memo(props => {
         <SecondLoader style={secondLoaderStyle} />
       </LeftWrap>
       <InnerCirle style={innerCirleStyle}>
-        <Text>{progress - 1}%</Text>
+        <Text style={textColor}>{progress - 1}%</Text>
       </InnerCirle>
     </Circle>
   );
@@ -156,7 +160,7 @@ ReactDOM.render(
     radius={100}
     borderWidth={5}
     percent={70}
-    color={"#2ecc52"}
+    color={"#ffa7c4"}
   />,
   rootElement
 );
