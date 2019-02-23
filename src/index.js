@@ -60,9 +60,15 @@ function usePercent(initValue) {
         }
       } else {
         setIsRunning(false);
+        setState(({ progress }) => {
+          if (progress > initValue) {
+            return { progress: progress - 1 };
+          }
+          return { progress };
+        });
       }
     },
-    isRunning ? 3 : null
+    isRunning ? 1 : null
   );
 
   return { ...state };
@@ -75,7 +81,6 @@ const PercentageCircle = React.memo(props => {
     rightTransformerDegree,
     progress
   } = usePercent(percent);
-  console.log(progress);
   const circleStyle = {
     width: props.radius * 2,
     height: props.radius * 2,
@@ -138,7 +143,7 @@ const PercentageCircle = React.memo(props => {
         <SecondLoader style={secondLoaderStyle} />
       </LeftWrap>
       <InnerCirle style={innerCirleStyle}>
-        <Text style={textColor}>{progress - 1}%</Text>
+        <Text style={textColor}>{progress}%</Text>
       </InnerCirle>
     </Circle>
   );
