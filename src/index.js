@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import ReactDOM from "react-dom";
 
-import "./styles.css";
 import {
   Circle,
   LeftWrap,
@@ -33,7 +32,7 @@ function useInterval(callback, delay) {
   );
 }
 
-function usePercent(initValue) {
+function usePercent(initValue, step, delay) {
   const [state, setState] = useState({
     progress: 0,
     leftTransformerDegree: "Odeg",
@@ -47,13 +46,13 @@ function usePercent(initValue) {
       if (progress < initValue) {
         if (progress >= 50) {
           setState(({ progress }) => ({
-            progress: progress + 1,
+            progress: progress + step,
             rightTransformerDegree: "180deg",
             leftTransformerDegree: (progress - 50) * 3.6 + "deg"
           }));
         } else {
           setState(({ progress }) => ({
-            progress: progress + 1,
+            progress: progress + step,
             rightTransformerDegree: progress * 3.6 + "deg",
             leftTransformerDegree: "0deg"
           }));
@@ -62,76 +61,76 @@ function usePercent(initValue) {
         setIsRunning(false);
         setState(({ progress }) => {
           if (progress > initValue) {
-            return { progress: progress - 1 };
+            return { progress: progress - step };
           }
           return { progress };
         });
       }
     },
-    isRunning ? 1 : null
+    isRunning ? delay : null
   );
 
   return { ...state };
 }
 
 const PercentageCircle = React.memo(props => {
-  const percent = props.percent;
+  const { percent, radius, bgcolor, color, borderWidth, innerColor, step, delay } = props;
   const {
     leftTransformerDegree,
     rightTransformerDegree,
     progress
-  } = usePercent(percent);
-  const circleStyle = {
-    width: props.radius * 2,
-    height: props.radius * 2,
-    borderRadius: props.radius,
-    backgroundColor: props.bgcolor
-  };
+  } = usePercent(percent, step, delay);
+  const circleStyle = useMemo(() => ({
+    width: radius * 2,
+    height: radius * 2,
+    borderRadius: radius,
+    backgroundColor: bgcolor
+  }), [radius, bgcolor]);
 
-  const leftWrapStyle = {
-    width: props.radius,
-    height: props.radius * 2,
+  const leftWrapStyle = useMemo(() => ({
+    width: radius,
+    height: radius * 2,
     left: 0
-  };
+  }), [radius]);
 
-  const laoderStyle = {
-    left: props.radius,
-    width: props.radius,
-    height: props.radius * 2,
+  const laoderStyle = useMemo(() => ({
+    left: radius,
+    width: radius,
+    height: radius * 2,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    backgroundColor: props.color,
+    backgroundColor: color,
     transform: "rotate(" + leftTransformerDegree + ")"
-  };
+  }), [radius, color, leftTransformerDegree]);
 
-  const secondLoaderStyle = {
-    left: -props.radius,
-    width: props.radius,
-    height: props.radius * 2,
+  const secondLoaderStyle = useMemo(() => ({
+    left: -radius,
+    width: radius,
+    height: radius * 2,
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: props.color,
+    backgroundColor: color,
     transform: "rotate(" + rightTransformerDegree + ")"
-  };
+  }), [radius, color, rightTransformerDegree]);
 
-  const innerCirleStyle = {
-    left: props.borderWidth,
-    top: props.borderWidth,
-    width: (props.radius - props.borderWidth) * 2,
-    height: (props.radius - props.borderWidth) * 2,
-    borderRadius: props.radius - props.borderWidth,
-    backgroundColor: props.innerColor
-  };
+  const innerCirleStyle = useMemo(() => ({
+    left: borderWidth,
+    top: borderWidth,
+    width: (radius - borderWidth) * 2,
+    height: (radius - borderWidth) * 2,
+    borderRadius: radius - borderWidth,
+    backgroundColor: innerColor
+  }), [borderWidth, radius, innerColor]);
 
-  const rightWrapStyle = {
-    width: props.radius,
-    height: props.radius * 2,
-    left: props.radius
-  };
+  const rightWrapStyle = useMemo(() => ({
+    width: radius,
+    height: radius * 2,
+    left: radius
+  }), [radius]);
 
-  const textColor = {
-    color: props.color
-  };
+  const textColor = useMemo(() => ({
+    color: color
+  }), [color]);
 
   return (
     <Circle style={circleStyle}>
@@ -156,6 +155,8 @@ PercentageCircle.defaultProps = {
   borderWidth: 2,
   bgcolor: "#e3e3e3",
   innerColor: "#fff",
+  step: 1,
+  delay: 1,
   disabled: false
 };
 
