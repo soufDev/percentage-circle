@@ -1,51 +1,22 @@
 {
-    "plugins": ["react-hooks"],
-    "extends": [
-      "airbnb",
-      "react"
-    ],
-    "env": {
-      "browser": true,
-      "node": true,
-      "jasmine": true,
-      "jest": true
-    },
+    "extends": ["airbnb", "prettier", "prettier/react"],
+    "plugins": ["react", "prettier", "react-hooks"],
     "rules": {
-      "jsx-a11y/anchor-has-content": "off",
-      "jsx-a11y/no-static-element-interactions": "off",
-      "jsx-a11y/href-no-hash": "off",
-      "no-continue": "warn",
-      "jsx-a11y/anchor-is-valid": [
-        "warn",
-        {
-          "aspects": [
-            "invalidHref"
-          ]
-        }
-      ],
+      "react/button-has-type": 0,
+      "import/no-absolute-path": 0,
+      "import/no-unresolved": 0,
       "react/jsx-filename-extension": [
         1,
         {
-          "extensions": [
-            ".js",
-            ".jsx"
-          ]
+          "extensions": [".js", "jsx"]
         }
       ],
-      "react/jsx-no-bind": [
-        "error",
-        {
-          "allowArrowFunctions": true,
-          "allowBind": false,
-          "ignoreRefs": true
-        }
-      ],
-      "react/no-did-update-set-state": "error",
-      "react/no-unknown-property": "error",
-      "react/no-unused-prop-types": "error",
-      "react/prop-types": "error",
-      "react/react-in-jsx-scope": "error",
+      "prettier/prettier": "error",
       "react-hooks/rules-of-hooks": "error",
-      "react/button-has-type": false
-    }
+      "consistent-return": 0
+    },
+    "env": {
+      "browser": true
+    },
+    "settings": {}
   }
